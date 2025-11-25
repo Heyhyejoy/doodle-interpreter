@@ -1,0 +1,684 @@
+/* =========================================================
+   Doodle Interpreter ✨
+   Clean, soft, minimal UI
+========================================================= */
+
+:root {
+  --bg-gradient: radial-gradient(
+    circle at top left,
+    #ffe6ff 0,
+    #e0f2ff 40%,
+    #fdf5ff 85%
+  );
+  --card-bg: #ffffff;
+  --card-border: #c4d4ff;
+  --card-shadow: 0 14px 28px rgba(86, 104, 160, 0.25);
+
+  --accent-blue: #7aa6ff;
+  --accent-pink: #ff7ac4;
+  --accent-yellow: #ffe97a;
+  --accent-lilac: #c7a6ff;
+
+  --text-main: #1f2933;
+  --text-soft: #6b7280;
+
+  --radius-card: 26px;
+  --radius-pill: 999px;
+}
+
+/* reset-ish */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  font-family: "Fredoka", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  color: var(--text-main);
+  background: var(--bg-gradient);
+  transition: background 0.8s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+/* APP LAYOUT ----------------------------------------------------- */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-header {
+  padding: 28px 20px 10px;
+  text-align: center;
+}
+
+.title-block h1 {
+  margin: 0 0 6px;
+  font-family: "Fredoka";
+  font-size: 32px;
+  letter-spacing: 0.03em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.app-main.single-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 22px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 22px 28px;
+  margin: 0 auto;
+}
+
+/* WINDOW-LIKE CARD ------------------------------------------------ */
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-card);
+  padding: 18px 18px 20px;
+  border: 2px solid #d3e0ff;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  height: 26px;
+  background: linear-gradient(90deg, #fef6ff, #e6f0ff);
+  border-bottom: 1px solid #d0ddff;
+}
+
+.card.canvas-panel::before {
+  background: linear-gradient(90deg, #e9f2ff, #fef0ff);
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.window-dots {
+  position: absolute;
+  top: 7px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.window-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.window-dot.red {
+  background: #ff778a;
+}
+.window-dot.yellow {
+  background: #ffd966;
+}
+.window-dot.green {
+  background: #9be28f;
+}
+
+/* headings */
+
+.card-title {
+  margin: 10px 0 2px;
+  font-family:"Fredoka";
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.card-desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+/* CANVAS SIDE ---------------------------------------------------- */
+
+.canvas-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* toolbar */
+
+.toolbar {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: rgba(229, 237, 255, 0.8);
+  border: 1px solid rgba(176, 196, 255, 0.9);
+  font-size: 11px;
+}
+
+.toolbar-group label {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+#color-picker {
+  border-radius: 10px;
+  border: 1px solid #c7d2fe;
+  padding: 0;
+  width: 28px;
+  height: 20px;
+  background: transparent;
+}
+
+#stroke-width {
+  accent-color: var(--accent-blue);
+}
+
+#stroke-width-label {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+#clear-btn {
+  margin-left: auto;
+}
+
+/* canvas frame */
+
+.canvas-wrapper {
+  width: 100%;
+  height: 360px;
+  border-radius: 22px;
+  border: 1px solid #d0ddff;
+  background: radial-gradient(
+    circle at top,
+    #fdfbff 0,
+    #f4f7ff 40%,
+    #fef5ff 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-wrapper::after {
+  content: "draw zone";
+  position: absolute;
+  bottom: 8px;
+  right: 14px;
+  font-size: 10px;
+  color: #9ca3af;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+#doodle-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+
+.hint {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+/* metrics */
+
+.live-metrics {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: #f4f4ff;
+  border: 1px solid #d7dbff;
+  font-size: 11px;
+}
+
+.metric-label {
+  color: var(--text-soft);
+}
+
+.metric-pill {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: #e0ebff;
+  font-size: 11px;
+}
+
+/* MOOD PICKER ---------------------------------------------------- */
+
+.mood-picker {
+  margin-top: 8px;
+  padding: 6px 10px 10px;
+  background: rgba(246, 248, 255, 0.9);
+  border-radius: 16px;
+  border: 1px solid #dde5ff;
+}
+
+.mood-label {
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-bottom: 4px;
+}
+
+.mood-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.mood-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #d0ddff;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(148, 163, 255, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.1s ease,
+    background-color 0.1s ease;
+}
+
+.mood-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(129, 140, 248, 0.35);
+  background: #f4f6ff;
+}
+
+.mood-btn.selected {
+  background: linear-gradient(135deg, #7aa6ff, #ff87d0);
+  color: #ffffff;
+  border-color: #7c9bff;
+  box-shadow: 0 7px 16px rgba(129, 140, 248, 0.6);
+}
+
+/* ANALYSIS SIDE -------------------------------------------------- */
+
+.analysis-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ai-header-row {
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shape-section h3,
+.summary-section h3,
+.ai-section h3,
+.calendar-section h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.shape-desc {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+/* shape list */
+
+.shape-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 12px;
+}
+
+.shape-list li {
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  background: #f9fbff;
+  border: 1px solid #d7e0ff;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shape-list li::before {
+  content: "✧";
+  font-size: 11px;
+  color: var(--accent-blue);
+}
+
+.shape-empty {
+  color: var(--text-soft);
+  border-style: dashed;
+}
+
+/* summary + AI output */
+
+.summary-box {
+  background: #f9fafb;
+  border-radius: 18px;
+  padding: 10px 12px;
+  border: 1px solid #e4e4ff;
+  max-height: 150px;
+  overflow: auto;
+}
+
+.summary-box pre {
+  margin: 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.ai-output {
+  background: radial-gradient(circle at top left, #fffaf0, #fff7fd);
+  border-radius: 18px;
+  border: 1px solid #ffe3f0;
+  padding: 12px 14px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+/* BUTTONS -------------------------------------------------------- */
+
+.btn {
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffffff, #e7f0ff);
+  color: var(--text-main);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.08s ease, box-shadow 0.1s ease, filter 0.1s ease;
+}
+
+.btn.small {
+  padding: 6px 12px;
+  font-size: 11px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.16);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 11px 24px rgba(15, 23, 42, 0.25);
+  filter: brightness(1.03);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.28);
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #7aa6ff, #ff87d0);
+  color: #ffffff;
+  font-family: "Fredoka";
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+
+.btn.ghost {
+  background: rgba(249, 250, 255, 0.9);
+  border: 1px solid #dbe3ff;
+}
+
+/* AI feedback buttons */
+
+.ai-feedback-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #d4d4ff;
+  background: #f9f9ff;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(148, 163, 255, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.1s ease,
+    background-color 0.1s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(129, 140, 248, 0.45);
+}
+
+.icon-btn.selected {
+  background: linear-gradient(135deg, #7aa6ff, #ff87d0);
+  color: #ffffff;
+  border-color: #7c9bff;
+}
+
+/* CALENDAR ------------------------------------------------------- */
+
+.calendar-section {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed #dde3ff;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.calendar-month-label {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 10px;
+}
+
+.calendar-day,
+.calendar-weekday {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-weekday {
+  font-size: 9px;
+  color: var(--text-soft);
+}
+
+.calendar-day {
+  cursor: pointer;
+  border: 1px solid #e4e7ff;
+  background: #f9f9ff;
+  transition: transform 0.08s ease, box-shadow 0.1s ease,
+    background-color 0.1s ease, border-color 0.1s ease;
+}
+
+.calendar-day:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(148, 163, 255, 0.35);
+  background: #f4f6ff;
+}
+
+.calendar-day.has-entry {
+  background: linear-gradient(135deg, #e1ebff, #ffe7f5);
+  border-color: #b3c4ff;
+  font-weight: 600;
+}
+
+.calendar-day.selected {
+  box-shadow: 0 6px 14px rgba(129, 140, 248, 0.6);
+  border-color: #7a8cff;
+}
+
+.calendar-hint {
+  margin: 6px 0 0;
+  font-size: 10px;
+  color: var(--text-soft);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.calendar-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cal-nav-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #d4d4ff;
+  background: #f9f9ff;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(148, 163, 255, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.1s ease,
+    background-color 0.1s ease;
+}
+
+.cal-nav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(129, 140, 248, 0.45);
+  background: #f4f6ff;
+}
+
+
+/* FOOTER  */
+
+.app-footer {
+  padding: 10px 22px 16px;
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+#status-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.status-error {
+  color: #d94646;
+}
+
+/* small screens -------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .app-main.single-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding-inline: 16px;
+  }
+
+  .canvas-wrapper {
+    height: 320px;
+  }
+}
+/* Row layout for Analyze + Today */
+.interpret-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  margin-top: 12px;
+}
+
+/* 개선된 버튼 스타일 */
+.today-btn {
+  background: #ececff;     
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.today-btn:hover {
+  background: #e0e0ff;
+  transform: translateY(-2px);
+}
+
+.ai-encouragement {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-soft);
+  font-style: italic;
+}

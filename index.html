@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Doodle Interpreter ✏️</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Playfair+Display:wght@500;700&display=swap" />
+
+  <link rel="stylesheet" href="./styles/style.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="title-block">
+        <h1>Doodle Interpreter</h1>
+        <p class="subtitle">
+          Sketch your feelings, let AI reflect them.
+        </p>
+      </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <main class="app-main single-layout">
+      <!-- LEFT: CANVAS PANEL -->
+      <section class="card canvas-panel">
+        <div class="window-dots">
+          <div class="window-dot red"></div>
+          <div class="window-dot yellow"></div>
+          <div class="window-dot green"></div>
+        </div>
+
+        <div class="entry-header">
+          <div>
+            <h2 class="card-title">Doodle Canvas</h2>
+            <p class="card-desc">
+              Draw anything. Strokes are captured for reflection.
+            </p>
+          </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <label for="color-picker">Color</label>
+            <input type="color" id="color-picker" value="#ff7ac4" />
+          </div>
+          <div class="toolbar-group">
+            <label for="stroke-width">Line</label>
+            <input type="range" id="stroke-width" min="2" max="16" value="6" />
+            <span id="stroke-width-label">6px</span>
+          </div>
+          <button id="clear-btn" class="btn small ghost">Clear canvas</button>
+        </div>
+
+        <!-- CANVAS -->
+        <div class="canvas-wrapper">
+          <canvas id="doodle-canvas"></canvas>
+        </div>
+
+        <p class="hint">
+          Try a circle, heart, or just messy lines.
+        </p>
+
+        <!-- LIVE METRICS -->
+        <div class="live-metrics">
+          <div class="metric">
+            <span class="metric-label">Line energy</span>
+            <span class="metric-pill" id="energy-pill">–</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Complexity</span>
+            <span class="metric-pill" id="complexity-pill">–</span>
+          </div>
+        </div>
+
+        <!-- TODAY MOOD PICKER -->
+        <div class="mood-picker">
+          <div class="mood-label">Today's Mood</div>
+          <div class="mood-buttons">
+            <button class="mood-btn" data-mood="happy" title="happy">
+              😊
+            </button>
+            <button class="mood-btn" data-mood="calm" title="calm">
+              😌
+            </button>
+            <button class="mood-btn" data-mood="neutral" title="soso">
+              😐
+            </button>
+            <button class="mood-btn" data-mood="sad" title="sad">
+              😢
+            </button>
+            <button class="mood-btn" data-mood="tired" title="tired">
+              😴
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: ANALYSIS + CALENDAR PANEL -->
+      <section class="card analysis-panel">
+        <div class="window-dots">
+          <div class="window-dot red"></div>
+          <div class="window-dot yellow"></div>
+          <div class="window-dot green"></div>
+        </div>
+
+        <!-- SHAPES -->
+        <section>
+          <h3>Detected shapes</h3>
+          <p class="shape-desc">
+            Rough detection of circle-like, heart-like, and lines.
+          </p>
+          <ul id="shape-list" class="shape-list">
+            <li class="shape-empty">
+              No shapes confidently detected yet.
+            </li>
+          </ul>
+        </section>
+
+        <!-- SUMMARY -->
+        <section class="summary-section">
+          <h3>Stroke summary</h3>
+          <div class="summary-box">
+            <pre id="summary-text">Draw something to see a summary.</pre>
+          </div>
+        </section>
+
+        <!-- AI REFLECTION -->
+        <section class="ai-section">
+          <div class="ai-header-row">
+            <h3>AI Reflection</h3>
+            <div class="ai-feedback-buttons">
+              <button id="ai-like" class="icon-btn" title="This feels accurate">
+                👍
+              </button>
+              <button id="ai-dislike" class="icon-btn" title="This does not match">
+                👎
+              </button>
+            </div>
+          </div>
+
+          <div class="ai-output" id="ai-output">
+            Draw first, then ask the AI to reflect.
+          </div>
+          <div id="ai-encouragement" class="ai-encouragement"> </div>
+          <div class="interpret-row">
+            <button id="interpret-btn" class="btn primary">Analyze</button>
+            <button id="calendar-today" class="btn secondary today-btn">Today</button>
+          </div>
+        </section>
+
+        <!-- MOOD CALENDAR -->
+        <section class="calendar-section">
+          <div class="calendar-header">
+            <button id="calendar-prev" class="cal-nav-btn" type="button">‹</button>
+            <div class="calendar-header-center">
+              <h3>Mood Calendar</h3>
+              <div class="calendar-month-label" id="calendar-month-label">
+                <!-- filled by JS -->
+              </div>
+            </div>
+
+            <button id="calendar-next" class="cal-nav-btn" type="button">›</button>
+
+          </div>
+          <div class="calendar-grid" id="calendar-grid">
+            <!-- days created by JS -->
+          </div>
+          <p class="calendar-hint">
+            Days with saved entries are highlighted. Click a day to revisit that mood
+            or save a new one.
+          </p>
+        </section>
+
+    </main>
+
+    <!-- FOOTER STATUS -->
+    <footer class="app-footer">
+      <div id="status-bar">Ready. Start doodling whenever you like 🕊️</div>
+    </footer>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="./scripts/doodleCanvas.js"></script>
+  <script src="./scripts/features.js"></script>
+  <script src="./scripts/llm.js"></script>
+  <script src="./scripts/app.js"></script>
+</body>
+
+</html>
